@@ -1,4 +1,3 @@
-
 package lift;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
         @Override
         public void run() {
             try {
-                Thread.sleep(5);
+                Thread.sleep(2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -59,7 +58,6 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
             }
         }
         requests3.remove(myRequest3);
-        //requests3.trimToSize();
     }
 
     public void pushDownButton(int floor) {
@@ -80,7 +78,6 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
             }
         }
         requests3.remove(myRequest3);
-        //requests3.trimToSize();
     }
     
     public void selectFloor(int floor) {
@@ -102,7 +99,6 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
             }
         }
         requests3.remove(myRequest3);
-        //requests3.trimToSize();
     }
 
     
@@ -124,13 +120,10 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
 
     public synchronized void doorsOpen(int floor) {
         currentFloor = floor;
-        synchronized (this){
-            this.notifyAll();
-        }
-        flag = false;
         while(true){
             synchronized (this){
                 try {
+                    this.notifyAll();
                     LiftWaker waker = new LiftWaker(this);
                     waker.start();
                     this.wait();
