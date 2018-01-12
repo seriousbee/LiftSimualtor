@@ -17,8 +17,8 @@ package lift;
  * @author K. Bryson
  */
 
-import org.junit.Assert;
 import edu.umd.cs.mtc.MultithreadedTestCase;
+import org.junit.Assert;
 
 public class MyLiftControllerMultithreadedTest5 extends MultithreadedTestCase {
 

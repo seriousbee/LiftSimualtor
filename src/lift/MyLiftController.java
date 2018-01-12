@@ -1,12 +1,9 @@
 
 package lift;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+import java.util.List;
 
 /**
  * Null implementation of a Lift Controller.
@@ -19,10 +16,29 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
         Direction direction;
     }
 
+    class LiftWaker extends Thread {
+
+        LiftWakerCallback callback;
+
+        public LiftWaker(LiftWakerCallback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            callback.liftWaitedEnough();
+        }
+    }
+
     private boolean flag = false;
     private int currentFloor = 0;
     private Direction currentDirection;
-    private ArrayList<Request> requests3 = new ArrayList<>();
+    private List<Request> requests3 = Collections.synchronizedList(new ArrayList<Request>());
 
     /* Interface for People */
     public void pushUpButton(int floor) {
@@ -43,6 +59,7 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
             }
         }
         requests3.remove(myRequest3);
+        //requests3.trimToSize();
     }
 
     public void pushDownButton(int floor) {
@@ -63,6 +80,7 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
             }
         }
         requests3.remove(myRequest3);
+        //requests3.trimToSize();
     }
     
     public void selectFloor(int floor) {
@@ -84,6 +102,7 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
             }
         }
         requests3.remove(myRequest3);
+        //requests3.trimToSize();
     }
 
     
@@ -143,4 +162,9 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
         flag = true;
         notifyAll();
     }
+
+}
+
+interface LiftWakerCallback {
+    void liftWaitedEnough();
 }
