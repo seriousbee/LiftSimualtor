@@ -1,5 +1,5 @@
 
-package lift;
+package com.ulluna;
 
 /**
  * Simulates a person using a lift.

@@ -1,5 +1,5 @@
 
-package lift;
+package com.ulluna;
 
 /**
  * Interface that lift controllers need to provide.
@@ -9,16 +9,6 @@ public interface LiftController {
 
     /********************/
     /* Global constants */
-    /********************/
-    
-    public enum Direction {
-        UP,
-        DOWN,
-        UNSET
-    }
-
-    /************************/
-    /* Interface for People */
     /************************/
 
     /*
@@ -30,9 +20,12 @@ public interface LiftController {
      * @param floor        Floor number that the person is on.
      */
     void pushUpButton(int floor) throws InterruptedException;
+
+    /************************/
+    /* Interface for People */
+
     void pushDownButton(int floor) throws InterruptedException;
-    
-    
+
     /*
      * A person is in the lift and selects a particular floor.
      *
@@ -43,9 +36,6 @@ public interface LiftController {
      */
     void selectFloor(int floor) throws InterruptedException;
 
-
-    /***********************/
-    /* Interface for Lifts */
     /***********************/
 
     /*
@@ -58,6 +48,10 @@ public interface LiftController {
      * @return    True if the lift should open its doors.
      */
     boolean liftAtFloor(int floor, Direction direction);
+
+
+    /***********************/
+    /* Interface for Lifts */
 
     /*
      * Lift informs the controller that it has its doors open.
@@ -75,5 +69,13 @@ public interface LiftController {
      * @param floor  Floor number that the lift is at.
      */
     void doorsClosed(int floor);
+
+    /********************/
+
+    enum Direction {
+        UP,
+        DOWN,
+        UNSET
+    }
 
 }

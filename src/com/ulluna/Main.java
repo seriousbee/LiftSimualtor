@@ -1,5 +1,5 @@
 
-package lift;
+package com.ulluna;
 
 /**
  * COMP201P Lift Simulator Coursework.

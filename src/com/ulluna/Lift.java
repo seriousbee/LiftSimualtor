@@ -1,5 +1,5 @@
 
-package lift;
+package com.ulluna;
 
 /**
  * Simulates a lift that cycles between the floors.
