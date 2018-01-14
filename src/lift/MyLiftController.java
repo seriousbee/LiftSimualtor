@@ -11,6 +11,10 @@ import java.util.List;
 public class MyLiftController implements LiftController, LiftWakerCallback {
 
     class Request{
+        Request(int floor, Direction direction) {
+            this.floor = floor;
+            this.direction = direction;
+        }
         int floor;
         Direction direction;
     }
@@ -18,8 +22,7 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
     class LiftWaker extends Thread {
 
         LiftWakerCallback callback;
-
-        public LiftWaker(LiftWakerCallback callback) {
+        LiftWaker(LiftWakerCallback callback) {
             this.callback = callback;
         }
 
@@ -41,29 +44,25 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
 
     /* Interface for People */
     public void pushUpButton(int floor) {
-        Request myRequest3 = new Request();
-        myRequest3.floor = floor;
-        myRequest3.direction = Direction.UP;
+        Request myRequest3 = new Request(floor, Direction.UP);
         requests3.add(myRequest3);
         while(true){
             synchronized (this){
-                    try {
-                        this.wait();
-                        if(currentFloor == floor && currentDirection == Direction.UP){
-                            break;
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                try {
+                    this.wait();
+                    if(currentFloor == floor && currentDirection == Direction.UP){
+                        break;
                     }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         requests3.remove(myRequest3);
     }
 
     public void pushDownButton(int floor) {
-        Request myRequest3 = new Request();
-        myRequest3.floor = floor;
-        myRequest3.direction = Direction.DOWN;
+        Request myRequest3 = new Request(floor, Direction.DOWN);
         requests3.add(myRequest3);
         while(true){
             synchronized (this){
@@ -81,18 +80,14 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
     }
     
     public void selectFloor(int floor) {
-        Request myRequest3 = new Request();
-        myRequest3.floor = floor;
-        myRequest3.direction = Direction.UNSET;
+        Request myRequest3 = new Request(floor, Direction.UNSET);
         requests3.add(myRequest3);
         while(true){
             synchronized (this){
                 try {
                     this.wait();
-                    if(currentFloor == floor){
-                        notifyAll();
+                    if(currentFloor == floor)
                         break;
-                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -101,19 +96,11 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
         requests3.remove(myRequest3);
     }
 
-    
     /* Interface for Lifts */
     public synchronized boolean liftAtFloor(int floor, Direction direction) {
-        if(direction.equals(Direction.UP)){
-            if(containsFloor(floor, direction)){
-                currentDirection = direction;
-                return true;
-            }
-        } else {
-            if(containsFloor(floor, direction)){
-                currentDirection = direction;
-                return true;
-            }
+        if(containsFloor(floor, direction)){
+            currentDirection = direction;
+            return true;
         }
         return false;
     }
