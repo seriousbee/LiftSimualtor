@@ -4,38 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+interface LiftWakerCallback {
+    void liftWaitedEnough();
+}
+
 /**
  * Null implementation of a Lift Controller.
  * @author K. Bryson
  */
 public class MyLiftController implements LiftController, LiftWakerCallback {
-
-    class Request{
-        Request(int floor, Direction direction) {
-            this.floor = floor;
-            this.direction = direction;
-        }
-        int floor;
-        Direction direction;
-    }
-
-    class LiftWaker extends Thread {
-
-        LiftWakerCallback callback;
-        LiftWaker(LiftWakerCallback callback) {
-            this.callback = callback;
-        }
-
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            callback.liftWaitedEnough();
-        }
-    }
 
     private boolean flag = false;
     private int currentFloor = 0;
@@ -43,54 +20,48 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
     private List<Request> requests3 = Collections.synchronizedList(new ArrayList<Request>());
 
     /* Interface for People */
-    public void pushUpButton(int floor) {
+    public synchronized void pushUpButton(int floor) {
         Request myRequest3 = new Request(floor, Direction.UP);
         requests3.add(myRequest3);
         while(true){
-            synchronized (this){
-                try {
-                    this.wait();
-                    if(currentFloor == floor && currentDirection == Direction.UP){
-                        break;
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try {
+                wait();
+                if (currentFloor == floor && currentDirection == Direction.UP) {
+                    break;
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         requests3.remove(myRequest3);
     }
 
-    public void pushDownButton(int floor) {
+    public synchronized void pushDownButton(int floor) {
         Request myRequest3 = new Request(floor, Direction.DOWN);
         requests3.add(myRequest3);
         while(true){
-            synchronized (this){
-                try {
-                    this.wait();
-                    if(currentFloor == floor && currentDirection == Direction.DOWN){
-                        break;
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try {
+                wait();
+                if (currentFloor == floor && currentDirection == Direction.DOWN) {
+                    break;
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         requests3.remove(myRequest3);
     }
-    
-    public void selectFloor(int floor) {
+
+    public synchronized void selectFloor(int floor) {
         Request myRequest3 = new Request(floor, Direction.UNSET);
         requests3.add(myRequest3);
         while(true){
-            synchronized (this){
-                try {
-                    this.wait();
-                    if(currentFloor == floor)
-                        break;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                wait();
+                if (currentFloor == floor)
+                    break;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
         requests3.remove(myRequest3);
@@ -143,8 +114,33 @@ public class MyLiftController implements LiftController, LiftWakerCallback {
         notifyAll();
     }
 
-}
+    class Request {
+        int floor;
+        Direction direction;
 
-interface LiftWakerCallback {
-    void liftWaitedEnough();
+        Request(int floor, Direction direction) {
+            this.floor = floor;
+            this.direction = direction;
+        }
+    }
+
+    class LiftWaker extends Thread {
+
+        LiftWakerCallback callback;
+
+        LiftWaker(LiftWakerCallback callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            callback.liftWaitedEnough();
+        }
+    }
+
 }
